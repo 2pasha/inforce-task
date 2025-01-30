@@ -21,8 +21,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serve": "json-server --watch db.json --port 3001"
+    "serve": "json-server --watch db.json --port 3001",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
+  "homepage": "https://2pasha.github.io/inforce-task",
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -40,5 +43,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
