@@ -17,3 +17,11 @@ export interface Comment {
   description: string;
   date: string;
 }
+
+export interface FormErrors {
+  name?: string;
+  count?: string;
+  width?: string;
+  height?: string;
+  weight?: string;
+}

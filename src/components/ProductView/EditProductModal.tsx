@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Product } from '../../types';
+import { FormErrors, Product } from '../../types';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { updateProduct } from '../../store/productSlice';
+import { validateForm } from '../../utils/validationForm';
 
 interface EditProductModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
     height: 0,
     weight: 0,
   });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     setFormData({
@@ -39,16 +41,24 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const { isValid, errors } = validateForm(formData);
+
+    if (!isValid) {
+      setErrors(errors);
+
+      return;
+    }
+
     const updatedProduct: Product = {
       ...product,
       name: formData.name,
       imageUrl: formData.imageUrl,
-      count: formData.count,
+      count: Number(formData.count),
       size: {
-        width: formData.width,
-        height: formData.height,
+        width: Number(formData.width),
+        height: Number(formData.height),
       },
-      weight: formData.weight,
+      weight: Number(formData.weight),
     };
 
     await dispatch(updateProduct(updatedProduct));
@@ -80,6 +90,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                   required
                 />
               </div>
+              {errors.name && <p className="help is-danger">{errors.name}</p>}
             </div>
 
             <div className="field">
@@ -106,6 +117,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                   required
                 />
               </div>
+              {errors.count && <p className="help is-danger">{errors.count}</p>}
             </div>
 
             <div className="columns">
@@ -118,9 +130,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                       type="number"
                       value={formData.width}
                       onChange={(e) => setFormData({ ...formData, width: Number(e.target.value) })}
-                      required
                     />
                   </div>
+                  {errors.width && <p className="help is-danger">{errors.width}</p>}
                 </div>
               </div>
               <div className="column">
@@ -132,9 +144,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                       type="number"
                       value={formData.height}
                       onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
-                      required
                     />
                   </div>
+                  {errors.height && <p className="help is-danger">{errors.height}</p>}
                 </div>
               </div>
             </div>
@@ -147,12 +159,12 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
                   type="number"
                   value={formData.weight}
                   onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
-                  required
                 />
               </div>
+              {errors.weight && <p className="help is-danger">{errors.weight}</p>}
             </div>
           </section>
-          <footer className="modal-card-foot">
+          <footer className="modal-card-foot buttons">
             <button type="submit" className="button is-primary">Save Changes</button>
             <button type="button" className="button" onClick={onClose}>Cancel</button>
           </footer>

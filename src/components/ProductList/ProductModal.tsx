@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { addProduct } from '../../store/productSlice';
+import { FormErrors } from '../../types';
+import { validateForm } from '../../utils/validationForm';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -9,7 +11,7 @@ interface ProductModalProps {
 }
 
 export const ProductModal: React.FC<ProductModalProps> = (
-  { 
+  {
     isOpen,
     onClose
   }
@@ -23,20 +25,28 @@ export const ProductModal: React.FC<ProductModalProps> = (
     height: 0,
     weight: 0,
   });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const { isValid, errors } = validateForm(formData);
+
+    if (!isValid) {
+      setErrors(errors);
+      
+      return;
+    }
+
     const productData = {
-      name: formData.name,
+      name: formData.name.trim(),
       imageUrl: formData.imageUrl,
-      count: formData.count,
+      count: Number(formData.count),
       size: {
-        width: formData.width,
-        height: formData.height,
+        width: Number(formData.width),
+        height: Number(formData.height),
       },
-      weight: formData.weight,
-      comments: []
+      weight: Number(formData.weight),
     };
 
     await dispatch(addProduct(productData));
@@ -49,6 +59,7 @@ export const ProductModal: React.FC<ProductModalProps> = (
       height: 0,
       weight: 0,
     });
+    setErrors({});
   };
 
   if (!isOpen) {
@@ -76,6 +87,7 @@ export const ProductModal: React.FC<ProductModalProps> = (
                   required
                 />
               </div>
+              {errors.name && <p className="help is-danger">{errors.name}</p>}
             </div>
 
             <div className="field">
@@ -99,9 +111,9 @@ export const ProductModal: React.FC<ProductModalProps> = (
                   type="number"
                   value={formData.count}
                   onChange={(e) => setFormData({ ...formData, count: Number(e.target.value) })}
-                  required
                 />
               </div>
+              {errors.count && <p className="help is-danger">{errors.count}</p>}
             </div>
 
             <div className="columns">
@@ -114,9 +126,9 @@ export const ProductModal: React.FC<ProductModalProps> = (
                       type="number"
                       value={formData.width}
                       onChange={(e) => setFormData({ ...formData, width: Number(e.target.value) })}
-                      required
                     />
                   </div>
+                  {errors.width && <p className="help is-danger">{errors.width}</p>}
                 </div>
               </div>
               <div className="column">
@@ -128,9 +140,9 @@ export const ProductModal: React.FC<ProductModalProps> = (
                       type="number"
                       value={formData.height}
                       onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
-                      required
                     />
                   </div>
+                  {errors.height && <p className="help is-danger">{errors.height}</p>}
                 </div>
               </div>
             </div>
@@ -143,9 +155,9 @@ export const ProductModal: React.FC<ProductModalProps> = (
                   type="number"
                   value={formData.weight}
                   onChange={(e) => setFormData({ ...formData, weight: Number(e.target.value) })}
-                  required
                 />
               </div>
+              {errors.weight && <p className="help is-danger">{errors.weight}</p>}
             </div>
           </section>
           <footer className="modal-card-foot buttons">
