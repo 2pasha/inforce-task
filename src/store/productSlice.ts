@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { Product } from '../types';
-
-const API_URL = 'http://localhost:3001';
+import { loadProducts, saveProducts } from '../utils/localStorage';
 
 interface ProductState {
   items: Product[];
@@ -19,39 +17,49 @@ const initialState: ProductState = {
 export const fetchProducts = createAsyncThunk<Product[]>(
   'products/fetchProducts',
   async () => {
-    const response = await axios.get<Product[]>(`${API_URL}/products`);
-    return response.data;
-  }
-);
-
-export const updateProduct = createAsyncThunk<Product, Product>(
-  'product/updateProduct',
-  async (product) => {
-    const response = await axios.put<Product>(
-      `${API_URL}/products/${product.id}`,
-      product
-    );
-
-    return response.data;
+    return loadProducts();
   }
 );
 
 export const addProduct = createAsyncThunk(
   'products/addProduct',
   async (product: Omit<Product, 'id' | 'comments'>) => {
-    const response = await axios.post<Product>(`${API_URL}/products`, {
+    const products = loadProducts();
+    const newProduct: Product = {
       ...product,
-      id: Date.now().toString(),
-      comments: [],
-    });
-    return response.data;
+      id: Date.now(),
+      comments: []
+    };
+    const updatedProducts = [...products, newProduct];
+
+    saveProducts(updatedProducts);
+    
+    return newProduct;
+  }
+);
+
+export const updateProduct = createAsyncThunk<Product, Product>(
+  'product/updateProduct',
+  async (product) => {
+    const products = loadProducts();
+    const updatedProducts = products.map(p => (
+      p.id === product.id ? product : p
+    ));
+
+    saveProducts(updatedProducts);
+
+    return product;
   }
 );
 
 export const deleteProduct = createAsyncThunk(
   'products/deleteProduct',
   async (id: number) => {
-    await axios.delete(`${API_URL}/products/${id}`);
+    const products = loadProducts();
+    const updatedProducts = products.filter(p => p.id !== id);
+
+    saveProducts(updatedProducts);
+
     return id;
   }
 );

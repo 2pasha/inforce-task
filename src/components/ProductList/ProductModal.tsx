@@ -148,7 +148,7 @@ export const ProductModal: React.FC<ProductModalProps> = (
               </div>
             </div>
           </section>
-          <footer className="modal-card-foot">
+          <footer className="modal-card-foot buttons">
             <button type="submit" className="button is-primary">Add Product</button>
             <button type="button" className="button" onClick={onClose}>Cancel</button>
           </footer>

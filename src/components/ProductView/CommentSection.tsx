@@ -35,6 +35,14 @@ export const CommentSection: React.FC<CommentSectionProps> = (
     setNewComment('');
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+
+      void handleAddComment();
+    }
+  };
+
   const handleDeleteComment = async (commentId: number) => {
     const updatedProduct = {
       ...product,
@@ -45,16 +53,17 @@ export const CommentSection: React.FC<CommentSectionProps> = (
   };
 
   return (
-    <div className="section">
+    <div className="section pr-0 pl-0">
       <h2 className="title is-4">Comments</h2>
       
       <div className="field">
         <div className="control">
           <textarea 
             className="textarea"
-            placeholder="Add a comment..."
+            placeholder="Add a comment... (Press Enter to submit)"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={handleKeyPress}
           />
         </div>
       </div>

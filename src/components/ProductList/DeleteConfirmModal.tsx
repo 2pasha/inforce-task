@@ -28,7 +28,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
         <section className="modal-card-body">
           <p>Are you sure you want to delete "{productName}"?</p>
         </section>
-        <footer className="modal-card-foot">
+        <footer className="modal-card-foot buttons">
           <button className="button is-danger" onClick={onConfirm}>Delete</button>
           <button className="button" onClick={onClose}>Cancel</button>
         </footer>
